@@ -35,36 +35,53 @@ function readProducts() {
 
 function chooseItem() {
     inquirer
-        .prompt({
+        .prompt([
+          {
             type: "rawlist",
-            name: "productId",
+            name: "item_id",
             message: "Please select the product ID number of the item you would like to buy today",
             choices: [
-            "1 - Pentel Energel Pens", 
-            "2 - Oil Filter Element", 
-            "3 - Leather Belt", 
-            "4 - Climbing Chalk", 
-            "5 - Addidas Campus Sneakers", 
-            "6 - Hydration Backpack", 
-            "7 - Aloe Vera Plant", 
-            "8 - Bluetooth Speaker", 
-            "9 - Cast-Iron Pan",
-            "10 - Chromebook"
+            "Pentel Energel Pens", 
+            "Oil Filter Element", 
+            "Leather Belt", 
+            "Climbing Chalk", 
+            "Addidas Campus Sneakers", 
+            "Hydration Backpack", 
+            "Aloe Vera Plant", 
+            "Bluetooth Speaker", 
+            "Cast-Iron Pan",
+            "Chromebook"
             ] 
-        })
+        },
+        {
+          name: "quantity",
+          type: "number",
+          message: "How many do you want to order?"
+        }
+      ])
         .then(function(answer) {
-            howMany();
-    });
+          var productQuery = "SELECT * FROM products WHERE product_name = ?";
+          sqlConnect.query(productQuery, [answer.item_id], function(err,res) {
+            if (res[0].stock_quantity < 10) {
+              console.log("true");
+            } else console.log("false");
+          })
+        });
 };
 
 function howMany() {
   inquirer
     .prompt({
       name: "quantity",
-      type: "input",
+      type: "number",
       message: "How many do you want to order?"
     })
     .then(function(answer) {
-        console.log(answer.quantity);
+        var amtRequest = answer.quantity;
+        console.log(answer);
+        // if (amtReqquest > productAmt) {
+        //   console.log("We're sorry, that product is out of stock. Please try again at a later date");
+        // }
+        chooseItem();
     })
 };
