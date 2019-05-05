@@ -61,19 +61,25 @@ function chooseItem(res) {
       ])
         .then(function(answer) {
           var productQuery = "SELECT * FROM products WHERE product_name = ?";
+          var orderAmt = answer.quantity;
+          console.log(orderAmt);
           sqlConnect.query(productQuery, [answer.item_id], function(err,res) {
-            if (err) throw err;
             var productAmt = res[0].stock_quantity;
-           // var newStock = res[0].stock_quantity - answer.quantity;
-            // var itemPrice = res[0].price;
-            // var orderAmt = (newStock * itemPrice);
+            console.log(productAmt);
+            var newStock = res[0].stock_quantity - answer.quantity;
+            console.log(newStock);
+            var itemPrice = res[0].price;
+            console.log(itemPrice);
+            var saleCost = (orderAmt * itemPrice);
+            console.log(saleCost);
+            if (err) throw err;
             if (answer.quantity < productAmt) {
-            //   var stockQuery = "UPDATE stock_quantity FROM products WHERE item_id = ?";
-            //   sqlConnect.query(stockQuery, [answer.item_id], function(req, res) {
-            //     console.log(res);
-            //   })
-            // } else { 
-            console.log(`Unable to process order. Maximum available quantity is ${productAmt}`);
+              var stockQuery = "UPDATE products SET stock_quantity = ? WHERE product_name = ?";
+              sqlConnect.query(stockQuery, [newStock, answer.item_id], function(req, res) {
+                console.log(`Thank you for your purchase. Your total for your order is $${saleCost}`);
+              })
+            } else { 
+            console.log(`Unable to process order. Maximum available product quantity is ${productAmt}`);
             }
           })
         });
