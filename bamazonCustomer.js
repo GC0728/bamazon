@@ -15,9 +15,10 @@ var sqlConnect = mysql.createConnection({
     database: "bamazon_db",
 });
 
-sqlConnect.connect(function(err) {
+sqlConnect.connect(function(err, res) {
     if (err) throw err;
     chooseItem();
+
 });
 
 
@@ -28,12 +29,11 @@ function readProducts() {
   function(err, res) {
     if (err) throw err;
     // Log all results of the SELECT statement -> JSON
-    console.log(res);
     connection.end();
   });
 }
 
-function chooseItem() {
+function chooseItem(res) {
     inquirer
         .prompt([
           {
@@ -62,12 +62,32 @@ function chooseItem() {
         .then(function(answer) {
           var productQuery = "SELECT * FROM products WHERE product_name = ?";
           sqlConnect.query(productQuery, [answer.item_id], function(err,res) {
-            if (res[0].stock_quantity < 10) {
-              console.log("true");
-            } else console.log("false");
+            if (err) throw err;
+            var productAmt = res[0].stock_quantity;
+           // var newStock = res[0].stock_quantity - answer.quantity;
+            // var itemPrice = res[0].price;
+            // var orderAmt = (newStock * itemPrice);
+            if (answer.quantity < productAmt) {
+            //   var stockQuery = "UPDATE stock_quantity FROM products WHERE item_id = ?";
+            //   sqlConnect.query(stockQuery, [answer.item_id], function(req, res) {
+            //     console.log(res);
+            //   })
+            // } else { 
+            console.log(`Unable to process order. Maximum available quantity is ${productAmt}`);
+            }
           })
         });
 };
+
+// function placeOrder(stock) {
+//   var productQuery = "SELECT * FROM products WHERE product_name = ?";
+//   sqlConnect.query(productQuery, [answer.item_id], function(err,res) {
+//     console.log(res);
+//   });
+//   console.log()
+// };
+
+
 
 function howMany() {
   inquirer
