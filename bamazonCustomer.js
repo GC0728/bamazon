@@ -62,16 +62,16 @@ function chooseItem(res) {
         .then(function(answer) {
           var productQuery = "SELECT * FROM products WHERE product_name = ?";
           var orderAmt = answer.quantity;
-          console.log(orderAmt);
+     //     console.log(orderAmt);
           sqlConnect.query(productQuery, [answer.item_id], function(err,res) {
             var productAmt = res[0].stock_quantity;
-            console.log(productAmt);
+   //         console.log(productAmt);
             var newStock = res[0].stock_quantity - answer.quantity;
-            console.log(newStock);
+    //        console.log(newStock);
             var itemPrice = res[0].price;
-            console.log(itemPrice);
+   //         console.log(itemPrice);
             var saleCost = (orderAmt * itemPrice);
-            console.log(saleCost);
+   //         console.log(saleCost);
             if (err) throw err;
             if (answer.quantity < productAmt) {
               var stockQuery = "UPDATE products SET stock_quantity = ? WHERE product_name = ?";
